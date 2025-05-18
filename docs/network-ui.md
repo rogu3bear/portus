@@ -24,5 +24,5 @@ Example YAML snippet representing a mapping:
 
 ## Dev Setup - JS tests & lint
 
-Install Node dependencies with `pnpm install`.
-Run `pnpm lint` to check code style and `pnpm test` to execute Jest tests.
+Install Node dependencies with `pnpm install --frozen-lockfile`.
+Run `pnpm lint` to check code style and `pnpm test` to execute Jest tests using Jest and React Testing Library.
