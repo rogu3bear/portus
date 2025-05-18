@@ -19,8 +19,8 @@ jobs:
         with:
           version: 8
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: cd ui && pnpm install --frozen-lockfile
       - name: Lint
-        run: pnpm lint
+        run: cd ui && pnpm lint
       - name: Test
-        run: pnpm test
+        run: cd ui && pnpm test

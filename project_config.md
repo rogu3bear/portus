@@ -8,4 +8,4 @@ version_pins:
   - python: ">=3.8,<4.0"
   - pytest: "^7.0"
   - mypy: "^1.0"
-  # TODO: Pin versions for frontend dependencies
+  # TODO(#issue): Pin versions for frontend dependencies

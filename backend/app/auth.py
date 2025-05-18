@@ -86,7 +86,7 @@ def status_endpoint(request: Request):
 
 
 # In-memory stores for WebAuthn demo data. These are reset on restart.
-# TODO: replace with persistent storage in production
+# TODO(#issue): replace with persistent storage in production
 WEBAUTHN_USERS: dict[str, bytes] = {}
 WEBAUTHN_CREDS: dict[str, list] = {}
 WEBAUTHN_STATE: dict[str, tuple] = {}
@@ -171,7 +171,7 @@ def webauthn_placeholder():
             status_code=501,
             detail="FIDO2 library not installed; biometric auth unavailable",
         )
-    # TODO: Implement full WebAuthn registration and login flows
+    # TODO(#issue): Implement full WebAuthn registration and login flows
     rp = PublicKeyCredentialRpEntity("portus", "Portus")
     _ = Fido2Server(rp)
     return {"detail": "WebAuthn placeholder"}

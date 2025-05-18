@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Pencil } from 'lucide-react';
 import { MappingEditor } from './mapping-editor';
 import { StatusDot } from './status-dot';
 import type { DomainMapping } from '@/lib/mapping-validators';
+import { useMappings } from '@/providers/mapping-provider';
 
 interface Props {
   mapping: DomainMapping;
@@ -11,11 +12,18 @@ interface Props {
 
 export function MappingCard({ mapping, onSave }: Props) {
   const [open, setOpen] = useState(false);
+  const [valid, setValid] = useState(true);
+  const { validateMapping } = useMappings();
+
+  useEffect(() => {
+    validateMapping(mapping).then(setValid);
+  }, [mapping, validateMapping]);
+
   return (
     <div className="rounded-md border p-4 space-y-2">
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-2">
-          <StatusDot ok={true} />
+          <StatusDot ok={valid} />
           <span className="font-medium truncate" title={mapping.domain}>
             {mapping.domain}
           </span>

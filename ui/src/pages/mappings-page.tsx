@@ -1,22 +1,24 @@
-import { useState } from 'react';
 import { MainLayout } from '../components/layout/main-layout';
 import { MappingGrid } from '../components/mappings/mapping-grid';
 import type { DomainMapping } from '../lib/mapping-validators';
+import { MappingProvider } from '../providers/mapping-provider';
+import { PortMapper } from '../components/port-mapper/port-mapper';
 
 export function MappingsPage() {
-  const [mappings, setMappings] = useState<DomainMapping[]>([
+  const initial: DomainMapping[] = [
     { id: 1, domain: 'auchsight.com', aliases: [], path: '/', ip: '10.0.5.9', port: 7802 },
     { id: 2, domain: 'api.auchsight.com', aliases: [], path: '/', ip: '10.0.5.9', port: 7804 },
-  ]);
-
-  const handleUpdate = (updated: DomainMapping) => {
-    setMappings((prev) => prev.map((m) => (m.id === updated.id ? updated : m)));
-  };
+  ];
 
   return (
-    <MainLayout>
-      <h2 className="mb-4 text-2xl font-bold tracking-tight">Domain Mappings</h2>
-      <MappingGrid mappings={mappings} onUpdate={handleUpdate} />
-    </MainLayout>
+    <MappingProvider initialMappings={initial}>
+      <MainLayout>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-2xl font-bold tracking-tight">Domain Mappings</h2>
+          <PortMapper />
+        </div>
+        <MappingGrid />
+      </MainLayout>
+    </MappingProvider>
   );
 }
