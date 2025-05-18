@@ -16,6 +16,12 @@ export function DashboardPage() {
           Logged in as:{' '}
           <span className="font-medium">{data?.user ?? 'anonymous'}</span>
         </p>
+        <a
+          href="/mappings"
+          className="text-primary underline focus:outline-none focus:ring"
+        >
+          View All Mappings
+        </a>
       </div>
     </MainLayout>
   );

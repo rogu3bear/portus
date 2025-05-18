@@ -4,6 +4,8 @@ import { Button } from '../ui/button';
 import { Moon, Sun, LogOut } from 'lucide-react';
 import { useAuth } from '../../providers/auth-provider';
 import { useNavigate } from 'react-router-dom';
+import { StatusBar } from './status-bar';
+import { SessionBadge } from './session-badge';
 
 export function MainLayout({ children }: { children: ReactNode }) {
   const { theme, setTheme } = useTheme();
@@ -20,6 +22,8 @@ export function MainLayout({ children }: { children: ReactNode }) {
         <div className="container flex h-16 items-center justify-between">
           <h1 className="text-xl font-bold">Portus</h1>
           <div className="flex items-center space-x-4">
+            <StatusBar />
+            <SessionBadge />
             <span className="text-sm text-muted-foreground">
               {user ?? 'anonymous'}
             </span>
