@@ -1,21 +1,31 @@
+[![GitHub](https://img.shields.io/badge/GitHub-rogu3bear%2Fportus-blue?logo=github)](https://github.com/rogu3bear/portus)
+
 # Portus: LAN Orchestrator
 
 [![CI](https://github.com/rogu3bear/portus/actions/workflows/ci.yml/badge.svg)](https://github.com/rogu3bear/portus/actions/workflows/ci.yml)
 [![Docker Pulls](https://img.shields.io/docker/pulls/rogu3bear/portus)](https://hub.docker.com/r/rogu3bear/portus) <!-- TODO(#200): verify link once published -->
 
-**Portus** is a local DNS and reverse-proxy orchestration system for managing services on a LAN.
+**Portus** is a local DNS and reverse-proxy orchestration system for managing services on a LAN.  
 It integrates FastAPI, React, CoreDNS, and Zoraxy for seamless service discovery, routing, and management.
+
+---
 
 ## Features
 
-- RESTful API for service orchestration
+- RESTful API for orchestrating LAN services
 - Local DNS management via CoreDNS
 - Reverse proxy with Zoraxy
 - SQLite-backed configuration
 - Optional authentication (username/password, WebAuthn)
 - React + Vite UI dashboard
-- Dockerized deployment
+- Dockerized deployment for easy setup
 - Health checks and monitoring endpoints
+
+---
+
+## Repository
+
+- **GitHub:** [https://github.com/rogu3bear/portus](https://github.com/rogu3bear/portus)
 
 ---
 
@@ -44,7 +54,7 @@ It integrates FastAPI, React, CoreDNS, and Zoraxy for seamless service discovery
 - **Proxy:** Zoraxy (containerized)
 - **DNS:** CoreDNS (containerized)
 - **Database:** SQLite
-- **CI/CD:** GitHub Actions (`.github/workflows/ci.yml`)
+- **CI/CD:** GitHub Actions
 - **Containerization:** Docker, Docker Compose
 
 ---
@@ -53,7 +63,7 @@ It integrates FastAPI, React, CoreDNS, and Zoraxy for seamless service discovery
 
 1. **Clone the repository:**
    ```bash
-   git clone rogu3bear/portus
+   git clone <repo-url>
    cd portus
    ```
 
