@@ -1,0 +1,4 @@
+admin:
+  enabled: false
+listen: ":4000"
+config_folder: /data

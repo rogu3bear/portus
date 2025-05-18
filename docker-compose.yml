@@ -1,0 +1,38 @@
+version: "3.9"
+
+services:
+  api:
+    build: ./backend
+    env_file: .env.dev
+    volumes:
+      - ./backend:/app
+      - ./data:/data
+    ports: ["${API_PORT}:8000"]
+
+  zoraxy:
+    image: ghcr.io/tobychui/zoraxy:latest
+    command: ["serve","--config","/config.yaml"]
+    volumes:
+      - ./zoraxy_config.yaml:/config.yaml
+      - ./zoraxy-data:/data
+    ports:
+      - "${ZORAXY_PORT}:4000"
+      - "9443:4443"
+
+  coredns:
+    image: coredns/coredns:1.12.1
+    command: ["-conf","/Corefile"]
+    volumes:
+      - ./Corefile:/Corefile
+      - ./db.lan:/db.lan
+    ports:
+      - "${DNS_PORT}:53/udp"
+      - "${DNS_PORT}:53/tcp"
+
+  ui:
+    build: ./ui
+    command: ["npm","run","preview","--","--port","5173"]
+    volumes: ["./ui:/app"]
+    ports:
+      - "${UI_PORT:-5173}:5173"
+    depends_on: [api]

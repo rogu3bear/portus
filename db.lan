@@ -1,0 +1,10 @@
+$ORIGIN lan.
+@   IN  SOA ns.lan. admin.lan. (
+        2025051801 ; serial
+        3600       ; refresh
+        1800       ; retry
+        604800     ; expire
+        300        ; minimum TTL
+)
+    IN  NS  ns.lan.
+ns  IN  A   192.168.1.1

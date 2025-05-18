@@ -1,0 +1,61 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pyc
+*.pdb
+*.egg-info/
+.eggs/
+*.egg
+*.log
+*.sqlite3
+data/*.db
+data/*.sqlite3
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+
+# Node.js
+node_modules/
+dist/
+build/
+coverage/
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor/IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Test/coverage
+htmlcov/
+.nyc_output/
+
+# Docker
+*.pid
+
+# Misc
+*.bak
+*.tmp
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Ignore local logs
+logs/
+scripts/logs/
+
+# Ignore artifacts
+artifacts/ 
