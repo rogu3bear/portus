@@ -26,3 +26,32 @@ Example YAML snippet representing a mapping:
 
 Install Node dependencies with `pnpm install --frozen-lockfile`.
 Run `pnpm lint` to check code style and `pnpm test` to execute Jest tests using Jest and React Testing Library.
+
+### Development Commands
+
+```bash
+pnpm install --frozen-lockfile
+pnpm lint
+pnpm test
+```
+
+### Docker Compose Example
+
+```yaml
+services:
+  portus-ui:
+    image: portus/ui:latest
+    ports:
+      - "8080:80"
+```
+
+### Additional Dev Commands
+
+```
+cd ui
+pnpm install --frozen-lockfile
+pnpm lint
+pnpm test
+```
+
+These commands ensure your lint and Jest environment match CI.

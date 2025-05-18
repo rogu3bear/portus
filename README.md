@@ -192,7 +192,7 @@ MIT
 
 ## Badges
 
-TODO: Add CI, coverage, and Docker Hub badges
+TODO(#issue): Add CI, coverage, and Docker Hub badges
 
 ---
 
@@ -206,8 +206,8 @@ TODO: Add CI, coverage, and Docker Hub badges
 
 ## TODO
 
-- Add project badges
-- Complete frontend and backend test coverage
-- Document advanced configuration options
+- TODO(#issue): Add project badges
+- TODO(#issue): Complete frontend and backend test coverage
+- TODO(#issue): Document advanced configuration options
 
 ---
