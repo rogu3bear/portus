@@ -131,6 +131,11 @@ Key settings:
 - `CORS_ORIGINS`, `RATE_LIMIT_ENABLED`
 - **Change all secrets before production!**
 
+## Advanced Configuration
+
+See [docs/advanced-config.md](docs/advanced-config.md) for optional settings
+such as custom ports, TLS setup, and authentication tweaks.
+
 ---
 
 ## Authentication
@@ -180,6 +185,7 @@ Key settings:
 - [docs/architecture.md](docs/architecture.md): System diagram
 - [docs/biometric.md](docs/biometric.md): WebAuthn setup
 - [docs/security.md](docs/security.md): Security guide
+- [docs/advanced-config.md](docs/advanced-config.md): Optional settings
 - [pipelines.md](pipelines.md): Dev/test/deploy workflows
 
 ---
@@ -192,7 +198,9 @@ MIT
 
 ## Badges
 
-TODO(#issue): Add CI, coverage, and Docker Hub badges
+[![CI](https://img.shields.io/github/actions/workflow/status/rogu3bear/portus/ci.yml?branch=main)](https://github.com/rogu3bear/portus/actions/workflows/ci.yml)
+[![Coverage](https://img.shields.io/codecov/c/github/rogu3bear/portus)](https://codecov.io/gh/rogu3bear/portus)
+[![Docker Pulls](https://img.shields.io/docker/pulls/rogu3bear/portus)](https://hub.docker.com/r/rogu3bear/portus)
 
 ---
 
@@ -204,10 +212,9 @@ TODO(#issue): Add CI, coverage, and Docker Hub badges
 
 ---
 
-## TODO
+## Roadmap
 
-- TODO(#issue): Add project badges
-- TODO(#issue): Complete frontend and backend test coverage
-- TODO(#issue): Document advanced configuration options
+- Expand frontend and backend test coverage
+- Document additional configuration options
 
 ---
