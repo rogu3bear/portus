@@ -177,6 +177,7 @@ Key settings:
 
 ## Documentation
 
+- [docs/index.md](docs/index.md): Overview of available documentation
 - [docs/architecture.md](docs/architecture.md): System diagram
 - [docs/biometric.md](docs/biometric.md): WebAuthn setup
 - [docs/security.md](docs/security.md): Security guide
@@ -192,7 +193,7 @@ MIT
 
 ## Badges
 
-TODO(#issue): Add CI, coverage, and Docker Hub badges
+TODO(#123): Add CI, coverage, and Docker Hub badges
 
 ---
 
@@ -206,8 +207,8 @@ TODO(#issue): Add CI, coverage, and Docker Hub badges
 
 ## TODO
 
-- TODO(#issue): Add project badges
-- TODO(#issue): Complete frontend and backend test coverage
-- TODO(#issue): Document advanced configuration options
+- TODO(#123): Add project badges
+- TODO(#124): Complete frontend and backend test coverage
+- TODO(#125): Document advanced configuration options
 
 ---
