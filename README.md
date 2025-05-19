@@ -182,6 +182,7 @@ such as custom ports, TLS setup, and authentication tweaks.
 
 ## Documentation
 
+- [docs/index.md](docs/index.md): Overview of available documentation
 - [docs/architecture.md](docs/architecture.md): System diagram
 - [docs/biometric.md](docs/biometric.md): WebAuthn setup
 - [docs/security.md](docs/security.md): Security guide
@@ -198,6 +199,8 @@ MIT
 
 ## Badges
 
+TODO(#123): Add CI, coverage, and Docker Hub badges
+=======
 [![CI](https://img.shields.io/github/actions/workflow/status/rogu3bear/portus/ci.yml?branch=main)](https://github.com/rogu3bear/portus/actions/workflows/ci.yml)
 [![Coverage](https://img.shields.io/codecov/c/github/rogu3bear/portus)](https://codecov.io/gh/rogu3bear/portus)
 [![Docker Pulls](https://img.shields.io/docker/pulls/rogu3bear/portus)](https://hub.docker.com/r/rogu3bear/portus)
@@ -214,6 +217,10 @@ MIT
 
 ## Roadmap
 
+- TODO(#123): Add project badges
+- TODO(#124): Complete frontend and backend test coverage
+- TODO(#125): Document advanced configuration options
+=======
 - Expand frontend and backend test coverage
 - Document additional configuration options
 
