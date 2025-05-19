@@ -89,7 +89,7 @@ def read_services(
     return db.query(models.Service).all()
 
 
-@app.post("/services/", response_model=Service)
+@app.post("/services/", response_model=Service, status_code=status.HTTP_201_CREATED)
 def create_service(
     service: ServiceCreate,
     db: Session = Depends(get_db),
@@ -102,7 +102,7 @@ def create_service(
     return db_service
 
 
-@app.delete("/services/{service_id}", response_model=Service)
+@app.delete("/services/{service_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_service(
     service_id: int,
     db: Session = Depends(get_db),
@@ -117,7 +117,7 @@ def delete_service(
     db.delete(db_service)
     db.commit()
     logger.info(f"Deleted service with id {service_id}")
-    return db_service
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 
 @app.get("/dashboard")
