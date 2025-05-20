@@ -1,12 +1,16 @@
 from datetime import datetime, timedelta
 import json
 import os
+import base64
+import pickle
 from fastapi import APIRouter, HTTPException, Request, Response
 from jose import jwt
 from passlib.context import CryptContext
 from pydantic import BaseModel
 
 from .settings import settings
+from .db import SessionLocal
+from . import models
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
@@ -85,10 +89,8 @@ def status_endpoint(request: Request):
     }
 
 
-# In-memory stores for WebAuthn demo data. These are reset on restart.
-# TODO(#127): replace with persistent storage in production
-WEBAUTHN_USERS: dict[str, bytes] = {}
-WEBAUTHN_CREDS: dict[str, list] = {}
+# In-memory state for WebAuthn challenges. Reset on restart.
+WEBAUTHN_STATE: dict[str, tuple] = {}
 WEBAUTHN_STATE: dict[str, tuple] = {}
 
 
@@ -111,14 +113,24 @@ def webauthn_begin(username: str):
         id=username.encode("utf-8"), name=username, display_name=username
     )
 
-    if username not in WEBAUTHN_CREDS:
-        registration_data, state = server.register_begin(user, credentials=[])
-        WEBAUTHN_STATE[username] = ("register", state, server)
-        return registration_data
+    db = SessionLocal()
+    try:
+        creds = (
+            db.query(models.WebAuthnCredential)
+            .filter(models.WebAuthnCredential.username == username)
+            .all()
+        )
+        cred_objs = [pickle.loads(c.credential_data) for c in creds]
+        if not cred_objs:
+            registration_data, state = server.register_begin(user, credentials=[])
+            WEBAUTHN_STATE[username] = ("register", state, server)
+            return registration_data
 
-    auth_data, state = server.authenticate_begin(WEBAUTHN_CREDS[username])
-    WEBAUTHN_STATE[username] = ("authenticate", state, server)
-    return auth_data
+        auth_data, state = server.authenticate_begin(cred_objs)
+        WEBAUTHN_STATE[username] = ("authenticate", state, server)
+        return auth_data
+    finally:
+        db.close()
 
 
 @router.post("/webauthn")
@@ -139,24 +151,46 @@ async def webauthn_complete(username: str, request: Request, response: Response)
     mode, state, server = WEBAUTHN_STATE.pop(username)
     data = await request.json()
 
-    if mode == "register":
-        attestation = server.register_complete(state, data)
-        WEBAUTHN_CREDS.setdefault(username, []).append(attestation.credential_data)
-        return {"status": "registered"}
+    db = SessionLocal()
+    try:
+        creds = (
+            db.query(models.WebAuthnCredential)
+            .filter(models.WebAuthnCredential.username == username)
+            .all()
+        )
+        cred_objs = [pickle.loads(c.credential_data) for c in creds]
 
-    # authenticate
-    server.authenticate_complete(state, WEBAUTHN_CREDS[username], data)
-    expiry = timedelta(minutes=settings.session_expiry_minutes)
-    token = jwt.encode({"sub": username, "exp": datetime.utcnow() + expiry}, settings.secret_key, algorithm=settings.algorithm)
-    response.set_cookie(
-        SESSION_COOKIE,
-        token,
-        max_age=int(expiry.total_seconds()),
-        httponly=True,
-        secure=True,  # keep strict security
-        samesite="strict",  # enforce cross-site request restrictions
-    )
-    return {"status": "authenticated"}
+        if mode == "register":
+            attestation = server.register_complete(state, data)
+            cred = models.WebAuthnCredential(
+                username=username,
+                credential_id=base64.b64encode(attestation.credential_data.credential_id).decode(),
+                credential_data=pickle.dumps(attestation.credential_data),
+                sign_count=attestation.auth_data.counter,
+            )
+            db.add(cred)
+            db.commit()
+            return {"status": "registered"}
+
+        # authenticate
+        server.authenticate_complete(state, cred_objs, data)
+        expiry = timedelta(minutes=settings.session_expiry_minutes)
+        token = jwt.encode(
+            {"sub": username, "exp": datetime.utcnow() + expiry},
+            settings.secret_key,
+            algorithm=settings.algorithm,
+        )
+        response.set_cookie(
+            SESSION_COOKIE,
+            token,
+            max_age=int(expiry.total_seconds()),
+            httponly=True,
+            secure=True,
+            samesite="strict",
+        )
+        return {"status": "authenticated"}
+    finally:
+        db.close()
 
 
 # Also provide a placeholder endpoint for compatibility
@@ -171,7 +205,6 @@ def webauthn_placeholder():
             status_code=501,
             detail="FIDO2 library not installed; biometric auth unavailable",
         )
-    # TODO(#128): Implement full WebAuthn registration and login flows
     rp = PublicKeyCredentialRpEntity("portus", "Portus")
     _ = Fido2Server(rp)
     return {"detail": "WebAuthn placeholder"}
