@@ -5,22 +5,32 @@ on:
   pull_request:
     branches: [ main ]
 jobs:
-  build:
+  ci:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node-version: [18]
-    defaults:
-      run:
-        working-directory: ui
     steps:
       - uses: actions/checkout@v3
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install backend dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r backend/requirements.txt
+          pip install ruff pytest
+      - name: Backend lint
+        run: ruff check backend/app
+      - name: Backend tests
+        run: pytest
+
       - uses: pnpm/action-setup@v2
         with:
           version: 8
-      - name: Install dependencies
-        run: cd ui && pnpm install --frozen-lockfile
-      - name: Lint
-        run: cd ui && pnpm lint
-      - name: Test
-        run: cd ui && pnpm test
+      - name: Install frontend dependencies
+        run: pnpm install --frozen-lockfile --dir ui
+      - name: Frontend lint
+        run: pnpm --dir ui lint
+      - name: Frontend typecheck
+        run: pnpm --dir ui typecheck
+      - name: Frontend tests
+        run: pnpm --dir ui test
