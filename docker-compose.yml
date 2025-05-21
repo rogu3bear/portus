@@ -11,6 +11,8 @@ services:
 
   zoraxy:
     image: tobyscloud/zoraxy:latest
+=======
+    image: tobychui/zoraxy:main
     command: ["serve","--config","/config.yaml"]
     volumes:
       - ./zoraxy_config.yaml:/config.yaml

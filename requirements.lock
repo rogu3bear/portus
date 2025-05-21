@@ -1,0 +1,7 @@
+# TODO(#210): Generate this file with pip-compile when network access available
+# Placeholder requirements lock for Python 3.11
+alembic==1.7.0
+fastapi==0.97.0
+pytest==7.4.0
+sqlalchemy==1.4.0
+uvicorn==0.27.0
