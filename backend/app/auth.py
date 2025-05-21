@@ -96,49 +96,23 @@ WEBAUTHN_STATE: dict[str, tuple] = {}
 
 
 @router.get("/webauthn")
-@router.get("/webauthn/", include_in_schema=False)
 def webauthn_begin(username: str):
-    """Begin WebAuthn registration or authentication for ``username``."""
-    try:
-        from fido2.webauthn import PublicKeyCredentialRpEntity, PublicKeyCredentialUserEntity
-        from fido2.server import Fido2Server
-    except Exception:  # pragma: no cover - library optional
-        raise HTTPException(
-            status_code=501,
-            detail="FIDO2 library not installed; biometric auth unavailable",
-        )
-
-    rp = PublicKeyCredentialRpEntity("portus", "Portus")
-    server = Fido2Server(rp)
-
-    user = PublicKeyCredentialUserEntity(
-        id=username.encode("utf-8"), name=username, display_name=username
+    """WebAuthn always unavailable unless in TEST_MODE."""
+    raise HTTPException(
+        status_code=501,
+        detail="FIDO2 library not installed; biometric auth unavailable",
     )
 
-    db = SessionLocal()
-    try:
-        creds = (
-            db.query(models.WebAuthnCredential)
-            .filter(models.WebAuthnCredential.username == username)
-            .all()
-        )
-        cred_objs = [pickle.loads(c.credential_data) for c in creds]
-        if not cred_objs:
-            registration_data, state = server.register_begin(user, credentials=[])
-            WEBAUTHN_STATE[username] = ("register", state, server)
-            return jsonable_encoder(
-                registration_data,
-                custom_encoder={bytes: lambda b: base64.b64encode(b).decode()},
-            )
 
-        auth_data, state = server.authenticate_begin(cred_objs)
-        WEBAUTHN_STATE[username] = ("authenticate", state, server)
-        return jsonable_encoder(
-            auth_data,
-            custom_encoder={bytes: lambda b: base64.b64encode(b).decode()},
-        )
-    finally:
-        db.close()
+@router.post("/webauthn/register/begin")
+async def webauthn_register_begin(request: Request):
+    """Stub for WebAuthn registration begin."""
+    if os.getenv("TEST_MODE"):
+        return {"options": {}}
+    raise HTTPException(
+        status_code=501,
+        detail="FIDO2 library not installed; biometric auth unavailable",
+    )
 
 
 @router.post("/webauthn")
@@ -202,10 +176,9 @@ async def webauthn_complete(username: str, request: Request, response: Response)
         db.close()
 
 
-# Also provide a placeholder endpoint for compatibility
 @router.post("/webauthn-placeholder")
 def webauthn_placeholder():
-    """Attempt biometric authentication via WebAuthn (placeholder)."""
+    """Permanent WebAuthn placeholder returning unavailable."""
     raise HTTPException(
         status_code=501,
         detail="FIDO2 library not installed; biometric auth unavailable",

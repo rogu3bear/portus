@@ -1,4 +1,5 @@
 from fastapi import FastAPI, Depends, HTTPException, status, Request, Response
+from fastapi.encoders import jsonable_encoder
 from jose import JWTError, jwt
 from sqlalchemy.orm import Session
 from . import models
@@ -31,6 +32,7 @@ app = FastAPI(
     version=os.getenv("API_VERSION", "0.1.0"),
     docs_url="/docs",
     redoc_url="/redoc",
+    redirect_slashes=False,
 )
 
 
@@ -83,15 +85,13 @@ async def health_check() -> Dict[str, str]:
 
 
 @app.get("/services", response_model=list[Service])
-@app.get("/services/", response_model=list[Service], include_in_schema=False)
 def read_services(
     db: Session = Depends(get_db), _=Depends(require_auth)
 ):
-    return db.query(models.Service).all()
+    return jsonable_encoder(db.query(models.Service).all())
 
 
 @app.post("/services", response_model=Service, status_code=status.HTTP_201_CREATED)
-@app.post("/services/", response_model=Service, status_code=status.HTTP_201_CREATED, include_in_schema=False)
 def create_service(
     service: ServiceCreate,
     db: Session = Depends(get_db),
@@ -101,7 +101,7 @@ def create_service(
     db.add(db_service)
     db.commit()
     db.refresh(db_service)
-    return db_service
+    return jsonable_encoder(db_service)
 
 
 @app.delete("/services/{service_id}", status_code=status.HTTP_204_NO_CONTENT)
