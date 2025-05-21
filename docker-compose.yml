@@ -10,6 +10,8 @@ services:
     ports: ["${API_PORT}:8000"]
 
   zoraxy:
+    image: tobyscloud/zoraxy:latest
+=======
     image: tobychui/zoraxy:main
     command: ["serve","--config","/config.yaml"]
     volumes:
