@@ -4,6 +4,7 @@ import os
 import base64
 import pickle
 from fastapi import APIRouter, HTTPException, Request, Response
+from fastapi.encoders import jsonable_encoder
 from jose import jwt
 from passlib.context import CryptContext
 from pydantic import BaseModel
@@ -95,6 +96,7 @@ WEBAUTHN_STATE: dict[str, tuple] = {}
 
 
 @router.get("/webauthn")
+@router.get("/webauthn/", include_in_schema=False)
 def webauthn_begin(username: str):
     """Begin WebAuthn registration or authentication for ``username``."""
     try:
@@ -124,16 +126,23 @@ def webauthn_begin(username: str):
         if not cred_objs:
             registration_data, state = server.register_begin(user, credentials=[])
             WEBAUTHN_STATE[username] = ("register", state, server)
-            return registration_data
+            return jsonable_encoder(
+                registration_data,
+                custom_encoder={bytes: lambda b: base64.b64encode(b).decode()},
+            )
 
         auth_data, state = server.authenticate_begin(cred_objs)
         WEBAUTHN_STATE[username] = ("authenticate", state, server)
-        return auth_data
+        return jsonable_encoder(
+            auth_data,
+            custom_encoder={bytes: lambda b: base64.b64encode(b).decode()},
+        )
     finally:
         db.close()
 
 
 @router.post("/webauthn")
+@router.post("/webauthn/", include_in_schema=False)
 async def webauthn_complete(username: str, request: Request, response: Response):
     """Complete WebAuthn flow using data posted by the browser."""
     try:
@@ -197,17 +206,10 @@ async def webauthn_complete(username: str, request: Request, response: Response)
 @router.post("/webauthn-placeholder")
 def webauthn_placeholder():
     """Attempt biometric authentication via WebAuthn (placeholder)."""
-    try:
-        from fido2.webauthn import PublicKeyCredentialRpEntity
-        from fido2.server import Fido2Server
-    except Exception:  # pragma: no cover - library optional
-        raise HTTPException(
-            status_code=501,
-            detail="FIDO2 library not installed; biometric auth unavailable",
-        )
-    rp = PublicKeyCredentialRpEntity("portus", "Portus")
-    _ = Fido2Server(rp)
-    return {"detail": "WebAuthn placeholder"}
+    raise HTTPException(
+        status_code=501,
+        detail="FIDO2 library not installed; biometric auth unavailable",
+    )
 
 
 class AuthConfig(BaseModel):

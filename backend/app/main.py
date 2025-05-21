@@ -82,14 +82,16 @@ async def health_check() -> Dict[str, str]:
     return {"status": "ok"}
 
 
-@app.get("/services/", response_model=list[Service])
+@app.get("/services", response_model=list[Service])
+@app.get("/services/", response_model=list[Service], include_in_schema=False)
 def read_services(
     db: Session = Depends(get_db), _=Depends(require_auth)
 ):
     return db.query(models.Service).all()
 
 
-@app.post("/services/", response_model=Service, status_code=status.HTTP_201_CREATED)
+@app.post("/services", response_model=Service, status_code=status.HTTP_201_CREATED)
+@app.post("/services/", response_model=Service, status_code=status.HTTP_201_CREATED, include_in_schema=False)
 def create_service(
     service: ServiceCreate,
     db: Session = Depends(get_db),
