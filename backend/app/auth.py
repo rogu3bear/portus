@@ -110,21 +110,23 @@ def webauthn_register_begin():
 
 @router.get("/webauthn")
 def webauthn_begin(username: str):
-    """Begin WebAuthn registration or authentication for ``username``."""
-    try:
-        from fido2.webauthn import PublicKeyCredentialRpEntity, PublicKeyCredentialUserEntity
-        from fido2.server import Fido2Server
-    except Exception:  # pragma: no cover - library optional
-        raise HTTPException(
-            status_code=501,
-            detail="FIDO2 library not installed; biometric auth unavailable",
-        )
+    """WebAuthn always unavailable unless in TEST_MODE."""
+    if settings.test_mode:
+        raise HTTPException(501, "Disabled in TEST")
+    raise HTTPException(
+        status_code=501,
+        detail="FIDO2 library not installed; biometric auth unavailable",
+    )
 
-    rp = PublicKeyCredentialRpEntity("portus", "Portus")
-    server = Fido2Server(rp)
 
-    user = PublicKeyCredentialUserEntity(
-        id=username.encode("utf-8"), name=username, display_name=username
+@router.post("/webauthn/register/begin")
+async def webauthn_register_begin(request: Request):
+    """Stub for WebAuthn registration begin."""
+    if settings.test_mode:
+        raise HTTPException(501, "Disabled in TEST")
+    raise HTTPException(
+        status_code=501,
+        detail="FIDO2 library not installed; biometric auth unavailable",
     )
 
     db = SessionLocal()
@@ -152,10 +154,14 @@ def webauthn_begin(username: str):
     finally:
         db.close()
 
+=======
 
 @router.post("/webauthn")
+@router.post("/webauthn/", include_in_schema=False)
 async def webauthn_complete(username: str, request: Request, response: Response):
     """Complete WebAuthn flow using data posted by the browser."""
+    if settings.test_mode:
+        raise HTTPException(501, "Disabled in TEST")
     try:
         import importlib
         importlib.import_module("fido2")
@@ -213,11 +219,14 @@ async def webauthn_complete(username: str, request: Request, response: Response)
         db.close()
 
 
-# Also provide a placeholder endpoint for compatibility
 @router.post("/webauthn-placeholder")
 def webauthn_placeholder():
     """Attempt biometric authentication via WebAuthn (placeholder)."""
     # Placeholder always unavailable because FIDO2 library is optional.
+=======
+    """Permanent WebAuthn placeholder returning unavailable."""
+    if settings.test_mode:
+        raise HTTPException(501, "Disabled in TEST")
     raise HTTPException(
         status_code=501,
         detail="FIDO2 library not installed; biometric auth unavailable",

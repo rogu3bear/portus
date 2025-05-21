@@ -1,4 +1,10 @@
+import json
+import os
+import sys
 from fastapi.testclient import TestClient
+
+# Add the parent directory to sys.path
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from backend.app.main import app
 
 client = TestClient(app)
@@ -13,3 +19,11 @@ def test_webauthn_placeholder_unavailable():
 def test_webauthn_endpoints_unavailable():
     resp = client.get("/auth/webauthn", params={"username": "alice"})
     assert resp.status_code == 501
+
+
+def test_webauthn_register_options():
+    # When TEST_MODE enabled, endpoint is disabled with 501
+    from backend.app.settings import settings
+    settings.test_mode = True
+    response = client.post("/auth/webauthn/register/begin", json={"username": "testuser"})
+    assert response.status_code == 501
