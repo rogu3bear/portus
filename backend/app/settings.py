@@ -8,6 +8,7 @@ class Settings(BaseSettings):
     session_expiry_minutes: int = 60 * 24 * 7  # 1 week by default
     secret_key: str = "change-me"
     algorithm: str = "HS256"
+    test_mode: bool = False
 
     class Config:
         env_file = ".env"

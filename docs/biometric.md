@@ -2,7 +2,7 @@
 
 Portus supports optional biometric authentication using the WebAuthn standard. The backend relies on the optional `fido2` Python package. If the package is not installed, the `/auth/webauthn` endpoints return a `501` status code.
 
-The biometric implementation stores credentials in-memory and is intended for development use only. Production deployments should replace this with persistent storage.
+Biometric credentials are persisted in the database via the `webauthn_credential` table. Earlier versions stored them in-memory, so upgrade migrations must be applied.
 
 ## Registration
 - Begin registration by sending a `GET /auth/webauthn?username=<name>` request.

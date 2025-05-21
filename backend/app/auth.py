@@ -4,7 +4,6 @@ import os
 import base64
 import pickle
 from fastapi import APIRouter, HTTPException, Request, Response
-from fastapi.encoders import jsonable_encoder
 from jose import jwt
 from passlib.context import CryptContext
 from pydantic import BaseModel
@@ -98,6 +97,8 @@ WEBAUTHN_STATE: dict[str, tuple] = {}
 @router.get("/webauthn")
 def webauthn_begin(username: str):
     """WebAuthn always unavailable unless in TEST_MODE."""
+    if settings.test_mode:
+        raise HTTPException(501, "Disabled in TEST")
     raise HTTPException(
         status_code=501,
         detail="FIDO2 library not installed; biometric auth unavailable",
@@ -107,8 +108,8 @@ def webauthn_begin(username: str):
 @router.post("/webauthn/register/begin")
 async def webauthn_register_begin(request: Request):
     """Stub for WebAuthn registration begin."""
-    if os.getenv("TEST_MODE"):
-        return {"options": {}}
+    if settings.test_mode:
+        raise HTTPException(501, "Disabled in TEST")
     raise HTTPException(
         status_code=501,
         detail="FIDO2 library not installed; biometric auth unavailable",
@@ -119,6 +120,8 @@ async def webauthn_register_begin(request: Request):
 @router.post("/webauthn/", include_in_schema=False)
 async def webauthn_complete(username: str, request: Request, response: Response):
     """Complete WebAuthn flow using data posted by the browser."""
+    if settings.test_mode:
+        raise HTTPException(501, "Disabled in TEST")
     try:
         import importlib
         importlib.import_module("fido2")
@@ -179,6 +182,8 @@ async def webauthn_complete(username: str, request: Request, response: Response)
 @router.post("/webauthn-placeholder")
 def webauthn_placeholder():
     """Permanent WebAuthn placeholder returning unavailable."""
+    if settings.test_mode:
+        raise HTTPException(501, "Disabled in TEST")
     raise HTTPException(
         status_code=501,
         detail="FIDO2 library not installed; biometric auth unavailable",
