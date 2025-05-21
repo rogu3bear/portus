@@ -88,6 +88,9 @@ def read_services(
 ):
     return db.query(models.Service).all()
 
+# Support trailing slash-less variant for compatibility
+app.get("/services", include_in_schema=False)(read_services)
+
 
 @app.post("/services/", response_model=Service, status_code=status.HTTP_201_CREATED)
 def create_service(
@@ -100,6 +103,9 @@ def create_service(
     db.commit()
     db.refresh(db_service)
     return db_service
+
+# Also expose POST /services without redirecting
+app.post("/services", include_in_schema=False, status_code=status.HTTP_201_CREATED)(create_service)
 
 
 @app.delete("/services/{service_id}", status_code=status.HTTP_204_NO_CONTENT)

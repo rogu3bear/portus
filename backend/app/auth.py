@@ -4,6 +4,7 @@ import os
 import base64
 import pickle
 from fastapi import APIRouter, HTTPException, Request, Response
+from fastapi.encoders import jsonable_encoder
 from jose import jwt
 from passlib.context import CryptContext
 from pydantic import BaseModel
@@ -17,6 +18,11 @@ router = APIRouter(prefix="/auth", tags=["auth"])
 PWD_CONTEXT = CryptContext(schemes=["bcrypt"], deprecated="auto")
 USERS_FILE = os.getenv("USERS_FILE", "users.json")
 SESSION_COOKIE = "portus_session"
+
+
+def _b64(data: bytes) -> str:
+    """Return Base64 encoded string for bytes."""
+    return base64.b64encode(data).decode()
 
 
 def _load_users() -> dict:
@@ -94,6 +100,14 @@ WEBAUTHN_STATE: dict[str, tuple] = {}
 WEBAUTHN_STATE: dict[str, tuple] = {}
 
 
+# Placeholder endpoint for future WebAuthn registration options
+@router.get("/webauthn/register/begin")
+def webauthn_register_begin():
+    """Return registration options (stub)."""
+    # TODO: implement full WebAuthn registration flow
+    return {}
+
+
 @router.get("/webauthn")
 def webauthn_begin(username: str):
     """Begin WebAuthn registration or authentication for ``username``."""
@@ -124,11 +138,17 @@ def webauthn_begin(username: str):
         if not cred_objs:
             registration_data, state = server.register_begin(user, credentials=[])
             WEBAUTHN_STATE[username] = ("register", state, server)
-            return registration_data
+            return jsonable_encoder(
+                registration_data,
+                custom_encoder={bytes: _b64},
+            )
 
         auth_data, state = server.authenticate_begin(cred_objs)
         WEBAUTHN_STATE[username] = ("authenticate", state, server)
-        return auth_data
+        return jsonable_encoder(
+            auth_data,
+            custom_encoder={bytes: _b64},
+        )
     finally:
         db.close()
 
@@ -197,17 +217,11 @@ async def webauthn_complete(username: str, request: Request, response: Response)
 @router.post("/webauthn-placeholder")
 def webauthn_placeholder():
     """Attempt biometric authentication via WebAuthn (placeholder)."""
-    try:
-        from fido2.webauthn import PublicKeyCredentialRpEntity
-        from fido2.server import Fido2Server
-    except Exception:  # pragma: no cover - library optional
-        raise HTTPException(
-            status_code=501,
-            detail="FIDO2 library not installed; biometric auth unavailable",
-        )
-    rp = PublicKeyCredentialRpEntity("portus", "Portus")
-    _ = Fido2Server(rp)
-    return {"detail": "WebAuthn placeholder"}
+    # Placeholder always unavailable because FIDO2 library is optional.
+    raise HTTPException(
+        status_code=501,
+        detail="FIDO2 library not installed; biometric auth unavailable",
+    )
 
 
 class AuthConfig(BaseModel):
