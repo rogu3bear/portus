@@ -140,14 +140,11 @@ Key settings:
 - `UI_PORT`, `UI_API_URL`
 - `SECRET_KEY`, `JWT_SECRET_KEY`, `AUTH_ENABLED`
 - `CORS_ORIGINS`, `RATE_LIMIT_ENABLED`
+- `TEST_MODE` controls stub behavior during tests
 - **Change all secrets before production!**
 
 ## Advanced Configuration
-
-See [docs/advanced-config.md](docs/advanced-config.md) for optional settings
-such as custom ports, TLS setup, and authentication tweaks.
-
----
+See [docs/advanced-config.md](docs/advanced-config.md) for optional settings such as custom ports, TLS setup, and authentication tweaks.
 
 ## Authentication
 

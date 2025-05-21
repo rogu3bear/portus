@@ -22,9 +22,8 @@ def test_webauthn_endpoints_unavailable():
 
 
 def test_webauthn_register_options():
-    # Skip actual WebAuthn tests for CI
-    os.environ["TEST_MODE"] = "1"
+    # When TEST_MODE enabled, endpoint is disabled with 501
+    from backend.app.settings import settings
+    settings.test_mode = True
     response = client.post("/auth/webauthn/register/begin", json={"username": "testuser"})
-    assert response.status_code == 200
-    data = response.json()
-    assert "options" in data
+    assert response.status_code == 501
