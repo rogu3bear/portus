@@ -4,7 +4,6 @@ import os
 import base64
 import pickle
 from fastapi import APIRouter, HTTPException, Request, Response
-from fastapi.encoders import jsonable_encoder
 from jose import jwt
 from passlib.context import CryptContext
 from pydantic import BaseModel
@@ -97,14 +96,13 @@ def status_endpoint(request: Request):
 
 # In-memory state for WebAuthn challenges. Reset on restart.
 WEBAUTHN_STATE: dict[str, tuple] = {}
-WEBAUTHN_STATE: dict[str, tuple] = {}
 
 
 # Placeholder endpoint for future WebAuthn registration options
 @router.get("/webauthn/register/begin")
-def webauthn_register_begin():
+def webauthn_register_options():
     """Return registration options (stub)."""
-    # TODO: implement full WebAuthn registration flow
+    # Placeholder - full WebAuthn registration not implemented
     return {}
 
 
@@ -128,33 +126,6 @@ async def webauthn_register_begin(request: Request):
         status_code=501,
         detail="FIDO2 library not installed; biometric auth unavailable",
     )
-
-    db = SessionLocal()
-    try:
-        creds = (
-            db.query(models.WebAuthnCredential)
-            .filter(models.WebAuthnCredential.username == username)
-            .all()
-        )
-        cred_objs = [pickle.loads(c.credential_data) for c in creds]
-        if not cred_objs:
-            registration_data, state = server.register_begin(user, credentials=[])
-            WEBAUTHN_STATE[username] = ("register", state, server)
-            return jsonable_encoder(
-                registration_data,
-                custom_encoder={bytes: _b64},
-            )
-
-        auth_data, state = server.authenticate_begin(cred_objs)
-        WEBAUTHN_STATE[username] = ("authenticate", state, server)
-        return jsonable_encoder(
-            auth_data,
-            custom_encoder={bytes: _b64},
-        )
-    finally:
-        db.close()
-
-=======
 
 @router.post("/webauthn")
 @router.post("/webauthn/", include_in_schema=False)
@@ -223,7 +194,6 @@ async def webauthn_complete(username: str, request: Request, response: Response)
 def webauthn_placeholder():
     """Attempt biometric authentication via WebAuthn (placeholder)."""
     # Placeholder always unavailable because FIDO2 library is optional.
-=======
     """Permanent WebAuthn placeholder returning unavailable."""
     if settings.test_mode:
         raise HTTPException(501, "Disabled in TEST")
