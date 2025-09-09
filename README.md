@@ -63,7 +63,7 @@ It integrates FastAPI, React, CoreDNS, and Zoraxy for seamless service discovery
 
 1. **Clone the repository:**
    ```bash
-   git clone <repo-url>
+   git clone rogu3bear/portus.git
    cd portus
    ```
 
